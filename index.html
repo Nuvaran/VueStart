@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <title>Vue Basics</title>
+        <script <script src="https://unpkg.com/vue@3"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <navbar
+            :pages="pages"
+            :activePage="activePage"
+            :nav-link-click="(index) => activePage = index"
+        ></navbar>
+        <page-viewer 
+            :page="pages[activePage]" 
+        ></page-viewer>
+    </body>
+
+    <script>
+        let app = Vue.createApp({
+            data() {
+                return {
+                    activePage: 0,
+                    pages: [
+                        {
+                            Link: {text: "Home", url: "home.html"},
+                            pageTitle: "Home Page",
+                            pageContent: "This is the Home Content"
+                        },
+                        {
+                            Link: {text: "About", url: "about.html"},
+                            pageTitle: "About Page",
+                            pageContent: "This is the About Content"
+                        },
+                        {
+                            Link: {text: "Contact", url: "contact.html"},
+                            pageTitle: "Contact Page",
+                            pageContent: "This is the Contact Content"
+                        }
+                    ]
+                };
+                    
+            },
+        })
+
+        app.component('page-viewer', {
+            props: ["page"],
+            template: `
+                <div id='app' class="container">
+                    <h1>{{page.pageTitle}}</h1>
+                    <p>{{page.pageContent}}</p>
+                </div>
+            `
+        }),
+
+        app.component('navbar', {
+            props: ["pages", "activePage", "navLinkClick"],
+            template: `
+                <nav 
+                    :class="[\`navbar-\${theme}\`, \`bg-\${theme}\`, 'navbar', 'navbar-expand-lg']"
+                >
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">Vue</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li v-for="(page, index) in pages" class="nav-item" :key="index">
+                                    <a 
+                                        class="nav-link" 
+                                        :class="{active: activePage == index}"
+                                        aria-current="page" 
+                                        :href="page.Link.url"
+                                        :title="\`This page goes to the \${page.Link.text} page\`"
+                                        @click.prevent="navLinkClick(index)"
+                                    >{{ page.Link.text }}</a>
+                                </li>
+                                </ul>
+                            <form class="d-flex">
+                                <button 
+                                    class="btn btn-primary"
+                                    @click.prevent="changeTheme()"
+                                >
+                                    Toggle NavBar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </nav>
+            `,
+            data() {
+                return {
+                    theme: "dark",
+                }
+            },
+            methods: ({
+                changeTheme() {
+                    let theme = "light";
+
+                    if (this.theme == "light") {
+                        theme = "dark";
+                    }
+                    this.theme = theme;
+                }
+            })
+
+        })
+        
+        app.mount('body');
+    </script>
+</html>
